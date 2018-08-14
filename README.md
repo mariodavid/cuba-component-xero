@@ -33,6 +33,26 @@ dependencies {
 }
 ```
 
+### Add Xero API maven repository
+
+In order to download all dependencies it is required to additionally add the following maven repositories to your `build.gradle`:
+
+```
+
+buildscript {
+    
+    //...
+    
+    repositories {
+
+        maven { url "https://raw.github.com/XeroAPI/Xero-Java/mvn-repo" }
+        maven { url "https://raw.github.com/XeroAPI/XeroAPI-Schemas/mvn-repo" }
+
+        //...
+        
+    }
+}
+```
 
 ### Usage
 
@@ -106,4 +126,17 @@ public List<Invoice> getInvoicesFromXero() {
 ```
 
 
-##### example usage
+### example usage
+
+An example usage of this application component can be found here: [cuba-example-using-xero](https://github.com/mariodavid/cuba-example-using-xero)
+
+
+### more information
+
+More information on how to use Xero as well as using additional configurations, the following resources should be looked at:
+
+* https://developer.xero.com/
+* https://developer.xero.com/documentation/libraries/java
+* https://github.com/XeroAPI/Xero-Java
+
+
