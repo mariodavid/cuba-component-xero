@@ -68,7 +68,7 @@ subprojects {
         pkg {
             repo = 'cuba-components'
             name = 'cuba-component-xero'
-            desc = 'CUBA platform application component for integrating with the Xero API'
+            desc = 'CUBA platform application component for easy integrating with the Xero API'
             userOrg = 'mariodavid'
 
             websiteUrl = 'https://github.com/mariodavid/cuba-component-xero'
