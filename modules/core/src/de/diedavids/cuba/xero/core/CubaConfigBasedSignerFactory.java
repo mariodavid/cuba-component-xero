@@ -9,12 +9,18 @@ import com.xero.api.HmacSignerFactory;
 import com.xero.api.RsaSignerFactory;
 import com.xero.api.SignerFactory;
 import de.diedavids.cuba.xero.configuration.XeroConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.UUID;
 
 public class CubaConfigBasedSignerFactory implements SignerFactory {
+
+
+    private static final Logger log = LoggerFactory.getLogger(CubaConfigBasedSignerFactory.class);
+
     private static final String PUBLIC_APP = "PUBLIC";
     private Config config;
 
@@ -25,43 +31,65 @@ public class CubaConfigBasedSignerFactory implements SignerFactory {
     @Override
     public OAuthSigner createSigner(String tokenSharedSecret) {
 
-
         if (config.getAppType().equals(PUBLIC_APP)) {
             return new HmacSignerFactory(config.getConsumerSecret()).createSigner(tokenSharedSecret);
         } else {
-            return new RsaSignerFactory(getPrivateKey(), config.getPrivateKeyPassword()).createSigner(
-                    tokenSharedSecret);
+            return new RsaSignerFactory(getPrivateKey(), config.getPrivateKeyPassword()).createSigner(tokenSharedSecret);
         }
     }
 
     private InputStream getPrivateKey() {
-        Resources resources = AppBeans.get(Resources.NAME);
-        FileStorageAPI fileStorageAPI = AppBeans.get(FileStorageAPI.NAME);
 
-        XeroConfiguration xeroConfiguration = AppBeans.get(Configuration.class)
-                .getConfig(XeroConfiguration.class);
+        FileDescriptor privateKeyFileDescriptor = tryToGetPrivateKeyFileDescriptor();
 
-        InputStream result = null;
-
-        if (xeroConfiguration.getPrivateKeyFileDescriptor() != null) {
-
-            try {
-                byte[] privateKeyBytes = fileStorageAPI.loadFile(xeroConfiguration.getPrivateKeyFileDescriptor());
-                result = new ByteArrayInputStream(privateKeyBytes);
-            } catch (FileStorageException e) {
-                e.printStackTrace();
-            }
+        if (privateKeyFileDescriptor != null) {
+            return loadPrivateKeyFromFileStorage(privateKeyFileDescriptor);
         }
         else {
-            String resourcePathToPrivateKey = config.getPathToPrivateKey();
-
-            if (resourcePathToPrivateKey != null) {
-                result = resources.getResourceAsStream(resourcePathToPrivateKey);
-            }
+            return loadPrivateKeyFromFilepath();
         }
 
-        return result;
+    }
 
+    private InputStream loadPrivateKeyFromFileStorage(FileDescriptor privateKeyFileDescriptor) {
+        try {
+            FileStorageAPI fileStorageAPI = getFileStorageAPI();
+            return new ByteArrayInputStream(fileStorageAPI.loadFile(privateKeyFileDescriptor));
+        } catch (FileStorageException e) {
+            log.error("Private Key file for referenece (xero.privateKeyFileDescriptor) could not be found via File Storage API.", e);
+            return null;
+        }
+    }
+
+    private InputStream loadPrivateKeyFromFilepath() {
+        String resourcePathToPrivateKey = config.getPathToPrivateKey();
+
+        if (resourcePathToPrivateKey != null) {
+            Resources resources = getResources();
+            return resources.getResourceAsStream(resourcePathToPrivateKey);
+        }
+        else {
+            return null;
+        }
+    }
+
+    protected Resources getResources() {
+        return AppBeans.get(Resources.NAME);
+    }
+
+
+    protected FileStorageAPI getFileStorageAPI() {
+        return AppBeans.get(FileStorageAPI.NAME);
+    }
+
+    private FileDescriptor tryToGetPrivateKeyFileDescriptor() {
+        XeroConfiguration xeroConfiguration = getXeroConfiguration();
+        return xeroConfiguration.getPrivateKeyFileDescriptor();
+    }
+
+    protected XeroConfiguration getXeroConfiguration() {
+        return AppBeans.get(Configuration.class)
+                    .getConfig(XeroConfiguration.class);
     }
 
 }

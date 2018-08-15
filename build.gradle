@@ -39,7 +39,7 @@ apply(plugin: 'cuba')
 cuba {
     artifact {
         group = 'de.diedavids.cuba.xero'
-        version = "0.1.0"
+        version = "0.1.1"
         isSnapshot = false
     }
     tomcat {
