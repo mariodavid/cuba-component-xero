@@ -126,12 +126,12 @@ public List<Invoice> getInvoicesFromXero() {
 ```
 
 
-### example usage
+### Example usage
 
 An example usage of this application component can be found here: [cuba-example-using-xero](https://github.com/mariodavid/cuba-example-using-xero)
 
 
-### more information
+### More information
 
 More information on how to use Xero as well as using additional configurations, the following resources should be looked at:
 
