@@ -57,9 +57,11 @@ buildscript {
 ### Usage
 
 In order to interact with the Xero API it is reqiured to setup an account and create the corresponding credentials
-accordingly.
+accordingly. After that the configuation settings can be setup in the CUBA application.
 
-After that the configuation settings can be setup in the CUBA application.
+
+#### Configure the Xero SDK integration - Video Tutorial
+In order to configure the connection to Xero correctly, this youtube video shows how to setup the integration: [CUBA Xero Java SDK Integration - configuration](https://youtu.be/A5HZM-wlOJA)
 
 #### Create Xero API credentials
 
